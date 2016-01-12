@@ -620,11 +620,16 @@ define([
 
                         if (!event.memo.noUndoRedo) {
                             var loadPatientProperties = true;
-                            if (event.memo.hasOwnProperty("details")
-                                && event.memo.details.hasOwnProperty("loadPatientProperties")) {
-                                loadPatientProperties = event.memo.details.loadPatientProperties;
+                            var skipConfirmDialogue = false;
+                            if (event.memo.hasOwnProperty("details")) {
+                                if (event.memo.details.hasOwnProperty("loadPatientProperties")) {
+                                    loadPatientProperties = event.memo.details.loadPatientProperties;
+                                }
+                                if (event.memo.details.hasOwnProperty("skipConfirmDialogue")) {
+                                    skipConfirmDialogue = event.memo.details.skipConfirmDialogue;
+                                }
                             }
-                            Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties);
+                            Controller._checkPatientLinkValidity(setLink, nodeID, modValue, loadPatientProperties, skipConfirmDialogue);
                         } else {
                             // if this is a redo event skip all the warnings
                             setLink(event.memo.clearOldData);
@@ -939,26 +944,31 @@ define([
         }
     }
 
-    Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties)
+    Controller._checkPatientLinkValidity = function(callbackOnValid, nodeID, linkID, loadPatientProperties, skipConfirmDialogue)
     {
+    	if (skipConfirmDialogue) {
+    		// assigning a new patient
+    		callbackOnValid(true, false);
+    	}
+    	
         var onCancelAssignPatient = function() {
             // clear link input field in node menu
             editor.getNodeMenu().update();
         }
 
         if (loadPatientProperties) {
-            var processLinkCallback = function(clearParameter) {
+            var processLinkCallback = function() {
                 callbackOnValid(true, true);
             }
         } else {
-            var processLinkCallback = function(clearParameter) {
+            var processLinkCallback = function() {
                 callbackOnValid(true, false);
             }
         }
 
         if (linkID == "") {
             var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-            editor.getOkCancelDialogue().show("<br><b>When you remove " + oldLinkID + " from the " + editor.getFamilyData().getFamilyId() + " family:</b><br><br>" +
+            editor.getOkCancelDialogue().show("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
                     "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                     "1) You will have the option to re-assign " + oldLinkID + " to another place in the pedigree<br><br>" +
                     "2) You will have the option to leave " + oldLinkID + " unassigned and thus completely unlinked from the " + editor.getFamilyData().getFamilyId() + " family.</div>",
@@ -1017,7 +1027,7 @@ define([
                             }
                         }
 
-                        processLinking("When you add " + linkID + " to the " + editor.getFamilyData().getFamilyId() + " family:<br>",
+                        processLinking("When you add " + linkID + " to this family:<br>",
                                 "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
                                 "2) This pedigree can be edited by any user with access to any member of the family." + clearPropertiesMsg);
                     }

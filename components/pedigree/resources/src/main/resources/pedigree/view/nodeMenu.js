@@ -643,24 +643,48 @@ define([
                 newPatientButton.observe('click', function(event) {
 
                     var _this = this;
+
+                    var setDoNotShow = function(checkBoxStatus) {
+                        if (checkBoxStatus) {
+                            editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
+                        }
+                    };
+
                     var _onPatientCreated = function(response) {
                         if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
                             console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
                             Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID,
-                                                                                    "eventDetails": {"loadPatientProperties": false} });
+                                                                                    "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
                             _this.reposition();
                         } else {
                             alert("Patient creation failed");
                         }
                     }
 
-                    var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                    document.fire("pedigree:load:start");
-                    new Ajax.Request(createPatientURL, {
-                        method: "GET",
-                        onSuccess: _onPatientCreated,
-                        onComplete: function() { document.fire("pedigree:load:finish"); }
-                    });
+                    var  processCreatePatient = function() {
+                    	var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                        document.fire("pedigree:load:start");
+                        new Ajax.Request(createPatientURL, {
+                            method: "GET",
+                            onSuccess: _onPatientCreated,
+                            onComplete: function() { document.fire("pedigree:load:finish"); }
+                        });
+                    }
+
+                    var processLinking = function(topMessage, notesMessage) {
+                        editor.getOkCancelDialogue().showWithCheckbox("<br><b>" + topMessage + "</b><br>" +
+                            "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
+                            notesMessage + "</div>",
+                            "Add patient to the family?",
+                            "Do not show this warning again<br>", false,
+                            "Confirm", function(checkBoxStatus) { setDoNotShow(checkBoxStatus); processCreatePatient() },
+                            "Cancel",  function(checkBoxStatus) { setDoNotShow(checkBoxStatus); });
+                    }
+
+                    processLinking("When you create a new patient and add to this family:<br>",
+                            "1) A copy of this pedigree will be placed in the electronic record of each family member.<br><br>"+
+                            "2) This pedigree can be edited by any user with access to any member of the family.");
+
                 });
                 patientNewLinkContainer.insert(patientPicker).insert("&nbsp;&nbsp;or&nbsp;&nbsp;").insert(newPatientButton);
                 result.insert(patientNewLinkContainer);
