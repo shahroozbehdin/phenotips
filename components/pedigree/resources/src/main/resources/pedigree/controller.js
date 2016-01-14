@@ -49,7 +49,9 @@ define([
         {
             // Assigns user-visible node labels for all person nodes, based on generation and order
             // ("I-1","I-2","I-3", "II-1", "II-2", etc.)
-
+            
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+            
             var check      = event.memo.hasOwnProperty("check");
             var clear      = false;
             var needRedraw = false;
@@ -257,6 +259,7 @@ define([
 
         handleSetProperty: function(event)
         {
+            //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             var nodeID     = event.memo.nodeID;
             var properties = event.memo.properties;
             var undoEvent  = {"eventName": event.eventName, "memo": {"nodeID": nodeID, "properties": Helpers.cloneObject(event.memo.properties)}};
@@ -287,9 +290,10 @@ define([
             for (var propertySetFunction in properties) {
                 if (properties.hasOwnProperty(propertySetFunction)) {
                     var propValue = properties[propertySetFunction];
-
+                    //console.log("attmepting to set property " + propertySetFunction + " to " + propValue);
                     if (!Controller._validatePropertyValue( nodeID, propertySetFunction, propValue)) continue;
 
+                    //console.log("validated");
                     // prepare undo event
                     var propertyGetFunction =  propertySetFunction.replace("set","get");
                     var oldValue = node[propertyGetFunction]();
@@ -912,7 +916,7 @@ define([
     {
         if (propertySetFunction == "setGender") {
             var possibleGenders = editor.getGraph().getPossibleGenders(nodeID);
-
+            //console.log("valid genders: " + Helpers.stringifyObject(possibleGenders));
             return possibleGenders[propValue];
         }
         return true;
@@ -957,22 +961,22 @@ define([
         }
 
         if (loadPatientProperties) {
-            var processLinkCallback = function() {
-                callbackOnValid(true, true);
+            var processLinkCallback = function(clearParameter) {
+                callbackOnValid(clearParameter, true);
             }
         } else {
-            var processLinkCallback = function() {
-                callbackOnValid(true, false);
+            var processLinkCallback = function(clearParameter) {
+                callbackOnValid(clearParameter, false);
             }
         }
 
         if (linkID == "") {
             var oldLinkID = editor.getNode(nodeID).getPhenotipsPatientId();
-            editor.getOkCancelDialogue().show("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
+            editor.getOkCancelDialogue().showWithCheckbox("<br><b>When you remove " + oldLinkID + " from this family:</b><br><br>" +
                     "<div style='margin-left: 30px; margin-right: 30px; text-align: left'>Please note that:<br><br>"+
                     "1) You will have the option to re-assign " + oldLinkID + " to another place in the pedigree<br><br>" +
                     "2) You will have the option to leave " + oldLinkID + " unassigned and thus completely unlinked from the " + editor.getFamilyData().getFamilyId() + " family.</div>",
-                    'Remove the connections?', processLinkCallback, onCancelAssignPatient );
+                    'Remove the connections?', 'Clear data from this pedigree node', true, "Remove link", processLinkCallback, "Cancel", onCancelAssignPatient );
             return;
         }
 
@@ -985,9 +989,10 @@ define([
                 editor.getView().unmarkAll();
                 onCancelAssignPatient();
             }
-            editor.getOkCancelDialogue().show("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the indiviudal currently selected?",
+            editor.getOkCancelDialogue().showWithCheckbox("<br>Patient " + linkID + " is already in this pedigree. Do you want to transfer the record to the indiviudal currently selected?",
                                                    "Re-link patient " + linkID + " to this node?",
-                                                   processLinkCallback, onCancel );
+                                                   'Clear data from the pedigree node currently linked to this patient', true,
+                                                   "OK", processLinkCallback, "Cancel", onCancel );
             return;
         }
 
