@@ -743,6 +743,11 @@
       <artifactId>phenotips-proxy-authentication</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-activeinstalls-client-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
 
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->
     <dependency>
