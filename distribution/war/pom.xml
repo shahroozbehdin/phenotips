@@ -745,6 +745,11 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-activeinstalls-common</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-activeinstalls-client-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
