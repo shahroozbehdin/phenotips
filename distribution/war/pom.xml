@@ -744,14 +744,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-activeinstalls-common</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-common</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-activeinstalls-client-api</artifactId>
-      <version>${xwiki.version}</version>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>pingback-client-api</artifactId>
+      <version>${projcet.version}</version>
     </dependency>
 
     <!-- Add dependencies on the XAR distributions so that we transitively include all JAR dependencies in the generated WAR -->
