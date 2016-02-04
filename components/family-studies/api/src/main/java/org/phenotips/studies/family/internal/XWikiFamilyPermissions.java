@@ -121,7 +121,13 @@ public class XWikiFamilyPermissions
         permissions.set(ALLOW, 1, context);
     }
 
-    private String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
+    /**
+     * Gets a patient document owner permissions.
+     *
+     * @param patientDoc patient to read permissions from
+     * @return array of rights
+     */
+    public String[] getEntitiesWithEditAccessAsString(XWikiDocument patientDoc)
     {
         String[] fullRights = new String[2];
         int i = 0;
@@ -177,9 +183,8 @@ public class XWikiFamilyPermissions
     /**
      * For every family member, read users and groups that has edit access on the patient, then gives edit access on the
      * family for any such user and group. After performing this method, if p is a member of the family, and x has edit
-     * access on p, x has edit access of the family.
-     *
-     * The user who is the owner of the family always has access to the family.
+     * access on p, x has edit access of the family. The user who is the owner of the family always has access to the
+     * family.
      *
      * @param family to update permissions
      * @param familyDocument document of family to update permissions

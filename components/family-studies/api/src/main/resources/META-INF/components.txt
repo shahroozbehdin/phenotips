@@ -7,3 +7,4 @@ org.phenotips.studies.family.internal.XWikiFamilyRepository
 org.phenotips.studies.family.internal.XWikiFamilyPermissions
 org.phenotips.studies.family.internal.export.XWikiFamilyExport
 org.phenotips.studies.family.listener.FamilyDeletingListener
+org.phenotips.studies.family.internal.migration.XWikiFamilyMigrator
