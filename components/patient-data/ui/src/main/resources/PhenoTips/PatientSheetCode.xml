@@ -823,12 +823,19 @@ document.observe('xwiki:dom:loaded', function()
 
                tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
+               var r = confirm("please confirm");
+               if (r==true){
+               if ()
                  var source = event.findElement('.summary-item').__source;
                  if (source._ynpicker) {
                    source._ynpicker._onUnselect();
                  } else {
                    source.click();
                  }
+               }
+               else{
+                return;
+               }
                });
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
              if (detailsUrl) {
