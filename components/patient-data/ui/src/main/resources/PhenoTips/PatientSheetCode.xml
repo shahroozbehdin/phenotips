@@ -824,10 +824,16 @@ document.observe('xwiki:dom:loaded', function()
                tools.insert(deleteTool);
                deleteTool.observe('click', function(event) {
                  var source = event.findElement('.summary-item').__source;
-                 if (source._ynpicker) {
-                   source._ynpicker._onUnselect();
-                 } else {
-                   source.click();
+                 var result = confirm("press ok to proceed...");
+                 if (result==true){
+                   if (source._ynpicker) {
+                     source._ynpicker._onUnselect();
+                   } else {
+                     source.click();
+                   }
+                 }
+                 else {
+                    return;
                  }
                });
                var detailsUrl = $('phenotype-meta-add-action') &amp;&amp; $('phenotype-meta-add-action').value;
